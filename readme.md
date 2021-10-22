@@ -1,4 +1,4 @@
-#Aplikasi Monitoring Covid-19
+# Aplikasi Monitoring Covid-19
 
 Anggota :
 - Andika Rizky (Back End)
@@ -13,9 +13,9 @@ Tentang Aplikasi Monitoring Covid-19 :
 - Aplikasi ini memiliki fitur untuk menampilkan semua data Covid-19 di Indonesia, dan fitur untuk mencari data berdasarkan nama provinsi.
 
 Cara Menjalankan :
-- Ketik command "npm install" di command prompt.
+- Ketik command ```npm install``` di command prompt.
 - Hubungkan Device atau emulator ke PC terlebih dahulu.
-- Lalu ketik "yarn android" atau "npx react-native run-android"
+- Lalu ketik ```yarn android``` atau ```npx react-native run-android```
 
 Release APK Download :
 https://drive.google.com/file/d/1RfpJdimb75Poqh4V7kwENPyw727ROB-2/view?usp=sharing
