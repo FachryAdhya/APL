@@ -8,7 +8,7 @@ Anggota :
 - Rahardian Albani Wijanarko (Front End/UI)
 
 Tentang Aplikasi Monitoring Covid-19 :
-- Aplikasi Data Covid-19 ini dibuat menggunakan React Native, dan datanya didapat dari API https://kawalcorona.com/api/.
+- Aplikasi Data Covid-19 ini dibuat menggunakan React Native, dan datanya didapat dari API https://data.covid19.go.id/.
 - Tujuan dari aplikasi ini adalah untuk memonitoring data Covid-19 di Indonesia, secara keseluruhan dan per-provinsi.
 - Aplikasi ini memiliki fitur untuk menampilkan semua data Covid-19 di Indonesia, dan fitur untuk mencari data berdasarkan nama provinsi.
 
