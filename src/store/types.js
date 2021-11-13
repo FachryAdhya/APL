@@ -1,0 +1,4 @@
+export const GET_INDONESIA = 'GET_INDONESIA';
+export const INDONESIA_ERROR = 'INDONESIA_ERROR';
+export const GET_PROVINSI = 'GET_PROVINSI';
+export const PROVINSI_ERROR = 'PROVINSI_ERROR';

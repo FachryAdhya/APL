@@ -6,6 +6,7 @@ import ListScreen from '../screen/list'
 import DashboardScreen from '../screen/dashboard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
+
 const Tab = createBottomTabNavigator();
 
 export default function RouteNavigation(){

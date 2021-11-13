@@ -3,46 +3,52 @@ import { useIsFocused } from '@react-navigation/native';
 import { View, SafeAreaView, Text, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Modal,Pressable } from 'react-native';
 import filter from 'lodash.filter';
 import styles from '../styles';
-import axios from 'axios';
+import { useSelector,useDispatch } from 'react-redux';
+import { getProvinsi } from '../store/actions/apiActions';
 
 const ListScreen = () => {
-    const urlGetDataProvinsi = 'https://api.kawalcorona.com/indonesia/provinsi/';
-    const [dataProvinsi, setDataProvinsi] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [isRefresh, setIsRefresh] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [dataModal, setDataModal] = useState([])
     const [query, setQuery] = useState('');
     const [fullData, setFullData] = useState([]);
     const isFocused = useIsFocused();
-    
-    const fetchDataProvinsi = async () => {
-        const response= await axios.get(urlGetDataProvinsi)
-        const {data,status} = response
-        if (status === 200 && data){
-            setDataProvinsi(data);
-            setFullData(data);
-            setLoading(false)
-            setIsRefresh(false)
-        }
-    };
+    const [loading, setLoading] = useState(true);
+    const [isRefresh, setIsRefresh] = useState(false)
+    const dispatch = useDispatch()
+    const provinsi = useSelector(state=>state.indonesia.provinsi);
+    const [data, setData] = useState(provinsi);
+
+    useEffect(()=>{
+        dispatch(getProvinsi());
+    }, [dispatch]);
 
     useEffect(()=>{
         setQuery('')
-        fetchDataProvinsi()
-    },[isFocused])
+        setData(provinsi)
+        setFullData(provinsi)
+        setLoading(false)
+    }, [isFocused,provinsi]);
+
+    const getDataProvinsi = () => {
+        setLoading(true)
+        getProvinsi()
+        setData(provinsi)
+        setFullData(provinsi)
+        setLoading(false)
+        setIsRefresh(false)
+    }
 
     const onRefresh = () => {
         setQuery('')
         setIsRefresh(true)
         setLoading(true)
-        fetchDataProvinsi();
+        getDataProvinsi();
     }
 
     const openModal = (id) =>{
         setLoading(true)
         for(let i = 0; i<fullData.length;i++){
-            if(fullData[i].attributes.Kode_Provi === id){
+            if(fullData[i].key === id){
                 setDataModal(fullData[i])
                 setLoading(false)
                 setModalVisible(!modalVisible)
@@ -110,17 +116,14 @@ const ListScreen = () => {
             const filteredData = filter(fullData, provinsi => {
                 return contains(provinsi, formattedQuery);
             });
-            setDataProvinsi(filteredData);
+            setData(filteredData);
             setQuery(text);
     };
 
-    const contains = ({ attributes }, query) => {
-        const { Provinsi } = attributes;
-
-        if (Provinsi.toLowerCase().includes(query)) {
+    const contains = ({key}, query) => {
+        if (key.toLowerCase().includes(query)) {
             return true;
         }
-
         return false;
     };
 
@@ -128,33 +131,28 @@ const ListScreen = () => {
         <SafeAreaView style={[styles.container,styles.bgDark]}>
             <View style={[styles.fullWidth]}>
                 <FlatList
-                    data={dataProvinsi}
+                    data={data}
                     renderItem={({ item, index }) => {
                             return (
                                 <TouchableOpacity 
                                         style={styles.card} 
                                         onPress={() => {
-                                            openModal(item.attributes.Kode_Provi);
+                                            openModal(item.key);
                                         }} 
                                 >
                                     <View style={[styles.cardContent]}>
-                                        <Text style={[styles.cardTitle,styles.textLight]}>{item.attributes.Provinsi}</Text>
+                                        <Text style={[styles.cardTitle,styles.textLight]}>{item.key}</Text>
                                     </View>
                                     <View style={[styles.cardContent]}>
                                         <Text style={[styles.cardCount,styles.textLight]}>
                                             {`Positif:
-                                            ${formatNumber(item.attributes.Kasus_Posi)}`}
+                                            ${formatNumber(item.jumlah_kasus)}`}
                                         </Text>
                                     </View>
-                                    {/* <View style={[styles.cardButton]}>
-                                        <View style={styles.followButton}>
-                                            <Text style={styles.textDark}>Detail</Text>  
-                                        </View>
-                                    </View> */}
                                 </TouchableOpacity>
                             )
                     }}
-                    keyExtractor={(item) => item.attributes.FID}
+                    keyExtractor={(item) => item.key}
                     onRefresh={onRefresh}
                     refreshing={isRefresh}
                     ListHeaderComponent={renderHeader}
@@ -172,10 +170,11 @@ const ListScreen = () => {
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
-                            <Text style={[styles.modalTitle,styles.textDark]}>{modalVisible? dataModal.attributes.Provinsi : '-'}</Text>
-                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Positif: ' + formatNumber(dataModal.attributes.Kasus_Posi) : '-'}</Text>
-                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Sembuh: ' + formatNumber(dataModal.attributes.Kasus_Semb) : '-'}</Text>
-                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Meninggal: ' + formatNumber(dataModal.attributes.Kasus_Meni) : '-'}</Text>
+                            <Text style={[styles.modalTitle,styles.textDark]}>{modalVisible? dataModal.key : '-'}</Text>
+                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Positif: ' + formatNumber(dataModal.jumlah_kasus) : '-'}</Text>
+                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Sembuh: ' + formatNumber(dataModal.jumlah_sembuh) : '-'}</Text>
+                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Kasus Meninggal: ' + formatNumber(dataModal.jumlah_meninggal) : '-'}</Text>
+                            <Text style={[styles.modalText,styles.textDark]}>{modalVisible? 'Sedang Dirawat: ' + formatNumber(dataModal.jumlah_dirawat) : '-'}</Text>
                             <Pressable
                             style={[styles.button, styles.buttonClose]}
                             onPress={() => setModalVisible(!modalVisible)}
